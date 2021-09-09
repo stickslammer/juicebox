@@ -1,27 +1,46 @@
-// inside db/seed.js
+const {
+    client,
+    getAllUsers // new
+} = require('./index');
 
-// grab our client with destructuring from the export in index.js
-const { client } = require('./index');
+async function dropTables() {
+    try {
+        await client.query(`
+
+    `);
+    } catch (error) {
+        throw error; // we pass the error up to the function that calls dropTables
+    }
+}
+
+async function createTables() {
+    try {
+        await client.query(`
+
+    `);
+    } catch (error) {
+        throw error; // we pass the error up to the function that calls createTables
+    }
+}
+
+
 
 async function testDB() {
     try {
-        // connect the client to the database, finally
         client.connect();
 
-        // queries are promises, so we can await them
-        const result = await client.query(`SELECT * FROM users;`);
-
-        // for now, logging is a fine way to see what's up
-        console.log(result);
+        const users = await getAllUsers();
+        console.log(users);
     } catch (error) {
         console.error(error);
     } finally {
-        // it's important to close out the client connection
         client.end();
     }
 }
 
 testDB();
+
+
 
 // const {
 //     client,
