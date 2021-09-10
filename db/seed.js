@@ -5,25 +5,45 @@ const {
 
 async function dropTables() {
     try {
+        console.log("Starting to drop tables...");
+
         await client.query(`
+        DROP TABLE IF EXISTS users;
+        
 
     `);
+        console.log("Finished dropping tables!");
     } catch (error) {
+        console.error("Error dropping tables!");
         throw error; // we pass the error up to the function that calls dropTables
     }
 }
 
 async function createTables() {
     try {
+        console.log("Starting to build tables...");
         await client.query(`
-
+       CREATE TABLE users (
+            id SERIAL PRIMARY KEY,
+            username varchar(255) UNIQUE NOT NULL,
+            password varchar(255) NOT NULL
+        );
     `);
     } catch (error) {
         throw error; // we pass the error up to the function that calls createTables
     }
 }
 
+async function rebuildDB() {
+    try {
+        client.connect();
 
+        await dropTables();
+        await createTables();
+    } catch (error) {
+        throw error;
+    }
+}
 
 async function testDB() {
     try {
@@ -38,7 +58,11 @@ async function testDB() {
     }
 }
 
-testDB();
+rebuildDB()
+    .then(testDB)
+    .catch(console.error)
+    .finally(() => client.end());
+
 
 
 
