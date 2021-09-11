@@ -4,27 +4,25 @@ const { Client } = require('pg'); // imports the pg module
 // supply the db name and location of the database
 const client = new Client('postgres://localhost:5432/juicebox-dev');
 
-async function createUser({ username, password }) {
+async function createUser({ username, password, name, location }) {
     try {
-        const { rows:[user] } = await client.query(`
-        INSERT INTO users(username, password)
-      VALUES ($1, $2)
+        const { rows } = await client.query(`
+        INSERT INTO users(username, password, name, location)
+      VALUES ($1, $2, $3, $4)
       ON CONFLICT (username) DO NOTHING
       RETURNING *;
 
-    `, [username, password]);
+    `, [username, password, name, location]);
 
-        return user;
+        return rows;
     } catch (error) {
         throw error;
     }
 }
 
-
-
 async function getAllUsers() {
     const { rows } = await client.query(
-        `SELECT id, username 
+        `SELECT id, username, name, location, active 
     FROM users;
   `);
 
