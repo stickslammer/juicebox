@@ -1,14 +1,15 @@
 const {
     client,
     getAllUsers,
-    createUser
+    createUser,
+    updateUser
 } = require('./index');
 
 async function dropTables() {
     try {
         console.log("Starting to drop tables...");
         await client.query(`
-        DROP TABLE IF EXISTS users;
+        DROP TABLE IF EXISTS posts, users;
         
 
     `);
@@ -16,6 +17,25 @@ async function dropTables() {
     } catch (error) {
         console.error("Error dropping tables!");
         throw error;
+    }
+}
+
+async function createPosts() {
+    try {
+        console.log("Starting to create posts...");
+        await client.query(`
+       CREATE TABLE posts (
+            id SERIAL PRIMARY KEY,
+            "authorId" INTEGER REFERENCES user(id) NOT NULL
+            title varchar(255) NOT NULL,
+            content VARCHAR(255) NOT NULL,
+            active BOOLEAN DEFAULT true
+        );
+    `);
+        console.log("Finished building tables!");
+    } catch (error) {
+        console.error("Error building tables!");
+        throw error; // we pass the error up to the function that calls createTables
     }
 }
 
@@ -69,8 +89,15 @@ async function rebuildDB() {
 async function testDB() {
     try {
         console.log("Starting to test database...");
+        console.log("Calling getAllUsers");
         const users = await getAllUsers();
         console.log("All users: ", users);
+        console.log("Calling updateUser on users[0]")
+        const updateUserResult = await updateUser(users[0].id, {
+            name: "Newname Sogood",
+            location: "Lesterville, KY"
+        });
+        console.log("Result:", updateUserResult);
         console.log("Finished database tests!");
     } catch (error) {
         console.error("Error testing database!");
