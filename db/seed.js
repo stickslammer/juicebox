@@ -13,6 +13,8 @@ async function dropTables() {
     try {
         console.log("Starting to drop tables...");
         await client.query(`
+        DROP TABLE IF EXISTS post_tags;
+        DROP TABLE IF EXISTS tags;
         DROP TABLE IF EXISTS posts;
         DROP TABLE IF EXISTS users;
     `);
@@ -29,7 +31,7 @@ async function createPosts() {
         await client.query(`
        CREATE TABLE posts (
             id SERIAL PRIMARY KEY,
-            "authorId" INTEGER REFERENCES user(id) NOT NULL
+            "authorId" INTEGER REFERENCES user(id) NOT NULL,
             title varchar(255) NOT NULL,
             content VARCHAR(255) NOT NULL,
             active BOOLEAN DEFAULT true
@@ -48,11 +50,19 @@ async function createTables() {
         await client.query(`
        CREATE TABLE users (
             id SERIAL PRIMARY KEY,
-            username varchar(255) UNIQUE NOT NULL,
-            password varchar(255) NOT NULL,
+            username VARCHAR(255) UNIQUE NOT NULL,
+            password VARCHAR(255) NOT NULL,
             name VARCHAR(255) NOT NULL,
             location VARCHAR(255) NOT NULL,
             active BOOLEAN DEFAULT true
+        );
+        CREATE TABLE tags (
+            id SERIAL PRIMARY KEY,
+            name VARCHAR(255) UNIQUE NOT NULL
+        );
+        CREATE TABLE post_tags (
+            "postId" INTEGER REFERENCES posts(id) UNIQUE,
+            "tagId" INTEGER REFERENCES tags(id) UNIQUE
         );
     `);
         console.log("Finished building tables!");
@@ -83,17 +93,17 @@ async function createInitialPosts() {
 
         console.log("Starting to create posts...");
         await createPost({
-            authorId: albert.id,
+            "authorId": albert.id,
             title: "First Post",
             content: "This is my first post. I hope I love writing blogs as much as I love writing them."
         });
         await createPost({
-            authorId: sandra.id,
+            "authorId": sandra.id,
             title: "How does this work?",
             content: "Seriously, does this even do anything?"
         });
         await createPost({
-            authorId: glamgal.id,
+            "authorId": glamgal.id,
             title: "Living the Glam Life",
             content: "Do you even? I swear that half of you are posing."
         });
