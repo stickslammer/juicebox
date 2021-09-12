@@ -120,8 +120,17 @@ async function getPostsByUser(userId, posts) {
 }
 
 async function getUserById(userId) {
-        `SELECT id, username, name, location, posts
-    FROM users;`
+    try {
+        const { rows: [ user ] } = client.query(`
+        SELECT id, username, name, location, posts
+    FROM users,
+    WHERE "authorId"= ${userId};
+    ON CONFLICT ("authorId") RETURN NULL`);
+        return rows.id;
+    } catch (error) {
+        console.log("getUserByIdError: ", error);
+        throw (error);
+    }
     // first get the user (NOTE: Remember the query returns 
     // (1) an object that contains 
     // (2) a `rows` array that (in this case) will contain 
@@ -133,7 +142,7 @@ async function getUserById(userId) {
     // get their posts (use getPostsByUser)
     // then add the posts to the user object with key 'posts'
     // return the user object
-}
+};
 
 // and export them
 module.exports = {
@@ -141,7 +150,9 @@ module.exports = {
     createUser,
     updateUser,
     createPost,
+    updatePost,
     getAllUsers,
+    getAllPosts,
     getPostsByUser,
     getUserById
 }
