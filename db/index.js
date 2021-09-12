@@ -7,8 +7,7 @@ const client = new Client('postgres://localhost:5432/juicebox-dev');
 
 async function createUser({ username, password, name, location }) {
     try {
-        const { rows: [user] } = await client.query('', []);
-        const { rows } = await client.query(`
+        const { rows: [user] } = await client.query(`
         INSERT INTO users(username, password, name, location)
       VALUES ($1, $2, $3, $4)
       ON CONFLICT (username) DO NOTHING
@@ -16,7 +15,7 @@ async function createUser({ username, password, name, location }) {
 
     `, [username, password, name, location]);
 
-        return rows;
+        return user;
     } catch (error) {
         throw error;
     }
@@ -124,9 +123,12 @@ async function getUserById(userId) {
         const { rows: [ user ] } = client.query(`
         SELECT id, username, name, location, posts
     FROM users,
-    WHERE "authorId"= ${userId};
-    ON CONFLICT ("authorId") RETURN NULL`);
-        return rows.id;
+    WHERE id=${userId};
+    `);
+        if (!user) {
+            return null
+        }
+        return user.id;
     } catch (error) {
         console.log("getUserByIdError: ", error);
         throw (error);
