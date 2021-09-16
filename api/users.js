@@ -13,6 +13,11 @@ usersRouter.get('/', async (req, res) => {
     res.send({
         users
     });
+usersRouter.post('/login', async (req, res, next) => {
+    console.log(req.body);
+    res.end();
+    });
+
 });
 
 module.exports = usersRouter;
