@@ -19,9 +19,9 @@ usersRouter.get('/', async (req, res) => {
 });
 
 usersRouter.post('/login', async (req, res, next) => {
-    const { username, password } = req.body;
+    const { id, username, password } = req.body;
 
-    const token = jwt.sign({ authorId, username }, process.env.JWT_SECRET);
+    const token = jwt.sign({ id: `${id}`, username }, process.env.JWT_SECRET);
 
     const recoveredData = jwt.verify(token, process.env.JWT_SECRET);
 
