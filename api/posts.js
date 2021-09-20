@@ -21,6 +21,7 @@ postsRouter.get('/', async (req, res) => {
             posts
         });
     } catch ({ name, message }) {
+        console.log("postsRouter.get message: ", message)
         next({ name, message });
     }
 });
@@ -87,7 +88,7 @@ postsRouter.patch('/:postId', requireUser, async (req, res, next) => {
 
 postsRouter.delete('/:postId', requireUser, async (req, res, next) => {
     try {
-        const post = await getPostById(req.params.postId);
+        const post = await getPostById(req.params.id);
 
         if (post && post.author.id === req.user.id) {
             const updatedPost = await updatePost(post.id, { active: false });
@@ -102,9 +103,11 @@ postsRouter.delete('/:postId', requireUser, async (req, res, next) => {
                 name: "PostNotFoundError",
                 message: "That post does not exist"
             });
+            
         }
 
     } catch ({ name, message }) {
+        console.log("We caught an error!");
         next({ name, message })
     }
 });

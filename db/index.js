@@ -200,6 +200,7 @@ async function getPostById(postId) {
       FROM posts
       WHERE id=$1;
     `, [postId]);
+        
         if (!post) {
             throw {
                 name: "PostNotFoundError",
